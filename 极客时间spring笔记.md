@@ -1,0 +1,111 @@
+# 极客时间 spring 笔记
+
+## 第一章 初识 Spring
+
+### 04 | 编写你的第一个Spring程序
+
+maven 打包
+
+mvn clean package -Dmaven.test.skip
+
+## 第二章：JDBC必知必会
+
+### 05 | 如何配置单数据源
+
+#### Lombok
+
+如果 Slf4j log 找不到，需要在 Intellij Idea 添加 Lombok 插件。
+
+Lombok 插件有可能和最新的 Intellij Idea 版本不兼容。比如 2019.3.4 社区版。
+
+#### Endpoints
+
+management.endpoints.web.exposure.include=* 可以暴露一些默认不在 Web 暴露的 Endpoints，这些默认只以 JMX 方式暴露。
+
+#### spring.output.ansi
+
+spring.output.ansi.enabled=ALWAYS 可以使 spring 的命令行输出彩色显示
+
+#### h2
+
+```
+#spring datasource config. h2 memory db
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.username=sa
+spring.datasource.password=
+```
+
+#### hikari
+
+```
+# hikari connection
+spring.datasource.hikari.maximumPoolSize=5
+spring.datasource.hikari.minimumIdle=5
+spring.datasource.hikari.idleTimeout=600000
+spring.datasource.hikari.connectionTimeout=30000
+spring.datasource.hikari.maxLifetime=1800000
+```
+
+### 06 | 如何配置多数据源
+
+@Bean 指返回值当做一个 Bean。
+
+@Resource 指方法的参数按照名字来注入其他的 Bean。
+
+### 08 | 那些好用的连接池们：Alibaba Druid
+
+druid 配置 filter
+
+resources/META-INF/druid-filter.properties 配置 filter
+
+```
+druid.filters.conn=com.example.druiddemo.ConnectionLogFilter
+```
+
+在连接前和连接后打印日志
+
+```java
+public class ConnectionLogFilter extends FilterEventAdapter {
+
+    @Override
+    public void connection_connectBefore(FilterChain chain, Properties info) {
+        System.out.println("BEFORE CONNECTION!");
+    }
+
+    @Override
+    public void connection_connectAfter(ConnectionProxy connection) {
+        System.out.println("AFTER CONNECTION!");
+    }
+}
+```
+
+[使用ConfigFilter](https://github.com/alibaba/druid/wiki/%E4%BD%BF%E7%94%A8ConfigFilter)
+
+### 09 | 如何通过Spring JDBC访问数据库
+
+SimpleJdbcInsert 简单 insert
+
+NamedParameterJdbcTemplate 根据 bean 插入修改删除
+
+网页查看 h2 数据库
+
+```java
+@Configuration
+public class DataConfig {
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public Server h2WebServer() throws SQLException {
+        return Server.createWebServer("-web", "-webAllowOthers", "-webDaemon", "-webPort", "8082");
+    }
+}
+```
+
+配置
+
+```
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.username=sa
+spring.datasource.password=
+```
+
+可以在 http://localhost:8082/ 查看数据库
