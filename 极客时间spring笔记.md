@@ -109,3 +109,58 @@ spring.datasource.password=
 ```
 
 可以在 http://localhost:8082/ 查看数据库
+
+### 11 | 什么是Spring的事务抽象（下）
+
+编程式事务
+
+```java
+    @Override
+    public void run(String... args) throws Exception {
+        log.info("COUNT BEFORE TRANSACTION: {}", getCount());
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                jdbcTemplate.execute("INSERT INTO FOO (ID, BAR) VALUES (1, 'aaa')");
+                log.info("COUNT IN TRANSACTION: {}", getCount());
+                transactionStatus.setRollbackOnly();
+            }
+        });
+        log.info("COUNT AFTER TRANSACTION: {}", getCount());
+    }
+```
+
+声明式事务
+
+```java
+    @Override
+    @Transactional(rollbackFor = RollbackException.class)
+    public void insertThenRollback() throws RollbackException {
+        jdbcTemplate.execute("INSERT INTO FOO (BAR) VALUES ('BBB')");
+        throw new RollbackException();
+    }
+```
+
+### 12 | 了解Spring的JDBC异常抽象
+
+配置 errorcode 的异常为 custom exception
+
+```xml
+        <property name="customTranslations">
+            <bean class="org.springframework.jdbc.support.CustomSQLErrorCodesTranslation">
+                <property name="errorCodes" value="23001,23505" />
+                <property name="exceptionClass"
+                          value="com.example.errorcodedemo.CustomDuplicatedKeyException" />
+            </bean>
+        </property>
+```
+
+测试抛出异常
+
+```java
+    @Test(expected = CustomDuplicatedKeyException.class)
+    public void testThrowingCustomException() {
+        jdbcTemplate.execute("INSERT INTO FOO (ID, BAR) VALUES (1, 'a')");
+        jdbcTemplate.execute("INSERT INTO FOO (ID, BAR) VALUES (1, 'b')");
+    }
+```
