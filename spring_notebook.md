@@ -164,3 +164,61 @@ spring.datasource.password=
         jdbcTemplate.execute("INSERT INTO FOO (ID, BAR) VALUES (1, 'b')");
     }
 ```
+
+## 第三章：O/R Mapping实践
+
+### 17 | 开始我们的线上咖啡馆实战项目：SpringBucks
+
+配置 Coffee Entity 和它的表 T_MENU。使用 Lombok 配置 Builder、Data 和 Constructor。
+
+```java
+@Entity
+@Table(name = "T_MENU")
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Coffee implements Serializable {
+```
+
+使用 Joda Money 和 usertype 配置金额和金额转换。注意不要使用浮点型表示金额。
+
+```java
+    @Column
+    @Type(type = "org.jadira.usertype.moneyandcurrency.joda.PersistentMoneyAmount",
+            parameters = {@org.hibernate.annotations.Parameter(name = "currencyCode", value = "CNY")})
+    private Money price;
+```
+
+使用 ManyToMany 配置多对多关系。JoinTable 配置外键。
+
+```java
+public class CoffeeOrder implements Serializable {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String customer;
+    @ManyToMany
+    @JoinTable(name = "T_ORDER_COFFEE")
+    private List<Coffee> items;
+```
+
+定义 CrudRepostory
+
+```java
+public interface CoffeeRepository extends CrudRepository<Coffee, Long> {
+}
+```
+
+保存到数据库
+
+```java
+    private void initOrders() {
+        Coffee espresso = Coffee.builder()
+                .name("espresso")
+                .price(Money.of(CurrencyUnit.of("CNY"), 20.0))
+                .build();
+        coffeeRepository.save(espresso);
+        log.info("Coffee: {}", espresso);
+        ...
+```
