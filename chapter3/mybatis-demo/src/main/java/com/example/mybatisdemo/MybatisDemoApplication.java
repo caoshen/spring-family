@@ -39,6 +39,7 @@ public class MybatisDemoApplication implements ApplicationRunner {
         count = coffeeMapper.save(c);
         log.info("Save {} Coffee: {}", count, c);
 
+//        c = coffeeMapper.findById(1L);
         c = coffeeMapper.findById(c.getId());
         log.info("Find Coffee: {}", c);
     }
