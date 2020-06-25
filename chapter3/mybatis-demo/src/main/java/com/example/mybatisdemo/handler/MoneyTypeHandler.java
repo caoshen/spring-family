@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * transform between Money and Long, handle CNY
+ */
 public class MoneyTypeHandler extends BaseTypeHandler<Money> {
     @Override
     public void setNonNullParameter(PreparedStatement preparedStatement, int i, Money money, JdbcType jdbcType) throws SQLException {

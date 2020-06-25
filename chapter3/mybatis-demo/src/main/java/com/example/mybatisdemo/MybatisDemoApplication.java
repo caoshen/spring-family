@@ -12,8 +12,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Slf4j
 @SpringBootApplication
+@Slf4j
 @MapperScan("com.example.mybatisdemo.mapper")
 public class MybatisDemoApplication implements ApplicationRunner {
 
@@ -39,8 +39,9 @@ public class MybatisDemoApplication implements ApplicationRunner {
         count = coffeeMapper.save(c);
         log.info("Save {} Coffee: {}", count, c);
 
-//        c = coffeeMapper.findById(1L);
-        c = coffeeMapper.findById(c.getId());
+        c = coffeeMapper.findById(1L);
+//        c = coffeeMapper.findById(c.getId());
         log.info("Find Coffee: {}", c);
     }
 }
+
