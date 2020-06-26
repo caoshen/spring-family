@@ -222,3 +222,11 @@ public interface CoffeeRepository extends CrudRepository<Coffee, Long> {
         log.info("Coffee: {}", espresso);
         ...
 ```
+
+### 21 | 让MyBatis更好用的那些工具：MyBatis Generator
+
+注意 pom.xml 要使用 2.1.2.RELEASE 版本的 springboot，如果使用 2.3.1.RELEASE 版本的 springboot 会无法生成 java 文件。
+
+在 resources 目录下要预先建立一个 mapper 目录，否则不会自动生成 mapper.xml。
+
+mybatis generator 会自动读取 resources 目录下的 generatorConfig.xml。
