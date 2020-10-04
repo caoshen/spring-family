@@ -2,42 +2,29 @@ package org.example.springbucks.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbucks.model.Coffee;
-import org.example.springbucks.model.CoffeeOrder;
-import org.example.springbucks.model.OrderState;
-import org.example.springbucks.repository.CoffeeOrderRepository;
+import org.example.springbucks.repository.CoffeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional
 public class CoffeeService {
     @Autowired
-    private CoffeeOrderRepository orderRepository;
+    private CoffeeRepository coffeeRepository;
 
-    public CoffeeOrder createOrder(String customer, Coffee... coffees) {
-        CoffeeOrder order = CoffeeOrder.builder()
-                .customer(customer)
-                .items(new ArrayList<>(Arrays.asList(coffees)))
-                .state(OrderState.INIT)
-                .build();
-        CoffeeOrder saved = orderRepository.save(order);
-        log.info("New order: {}", saved);
-        return saved;
+    public Optional<Coffee> findOneCoffee(String name) {
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withMatcher("name",
+                ExampleMatcher.GenericPropertyMatchers.exact().ignoreCase());
+
+        Coffee coffee = Coffee.builder().name(name).build();
+        Optional<Coffee> optional = coffeeRepository.findOne(Example.of(coffee, exampleMatcher));
+        log.info("Coffee found: {}", optional);
+        return optional;
     }
 
-    public boolean updateState(CoffeeOrder order, OrderState state) {
-        if (state.compareTo(order.getState()) <= 0) {
-            log.warn("Wrong state order: {}, {}", state, order.getState());
-            return false;
-        }
-        order.setState(state);
-        orderRepository.save(order);
-        log.info("New order: {}", order);
-        return true;
-    }
 }

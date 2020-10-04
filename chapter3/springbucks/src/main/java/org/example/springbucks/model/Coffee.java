@@ -13,9 +13,9 @@ import java.io.Serializable;
 @Table(name = "T_COFFEE")
 @Builder
 @Data
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
 public class Coffee extends BaseEntity implements Serializable {
     private String name;
 

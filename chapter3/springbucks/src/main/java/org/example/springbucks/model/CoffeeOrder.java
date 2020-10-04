@@ -11,11 +11,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "T_ORDER")
-@Builder
 @Data
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper = true)
+@Builder
 public class CoffeeOrder extends BaseEntity implements Serializable {
     private String customer;
 
